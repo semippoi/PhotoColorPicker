@@ -11,8 +11,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->graphicsView->setScene(&scene);
 
+    // ƒRƒlƒNƒg
     connect(ui->graphicsView, SIGNAL(getColor(QColor &)), this, SLOT(displayGetColor(QColor &)));
     connect(this, SIGNAL(currentColorChanged(QColor &)), this, SLOT(displayGetColor(QColor &)));
+    connect(this, SIGNAL(currentColorChanged(QColor &)), ui->graphicsView, SLOT(changeCurrentColor(QColor &)));
 
     current_color = Qt::black;
     ui->toolButton->setStyleSheet("background-color:#000000");
@@ -34,13 +36,13 @@ void MainWindow::on_pushButton_clicked()
     QString path = QFileDialog::getOpenFileName(this, "Open", QString(), tr("Image Files (*.bmp *.png *.jpg)"));
     if (path.isEmpty()) return;
     QPixmap pixmap(path);
-    scene.addPixmap(pixmap);
+    //scene.addPixmap(pixmap);
     ui->graphicsView->initializeLayer(pixmap);
 
     ui->lineEdit->setText(path);
 
     // ‰æ‘œ‚É‡‚í‚¹‚ÄLk‚·‚é
-    ui->graphicsView->setFixedSize(pixmap.width() + 50, pixmap.height() + 50);
+    ui->graphicsView->setFixedSize(pixmap.width(), pixmap.height());
 }
 
 void MainWindow::displayGetColor(QColor &color)

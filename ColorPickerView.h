@@ -16,8 +16,9 @@ public:
     void initializeLayer(QPixmap const &pixmap);
 
     virtual void mousePressEvent(QMouseEvent *event);
+    virtual void paintEvent(QPaintEvent *);
 private:
-    QColor pickUpColor(QPoint pos);
+    QColor pickUpColor(QPixmap pixmap, QPoint pos);
     void invalidatePixmap();
 
 protected:
@@ -26,6 +27,8 @@ protected:
 
 signals:
     void getColor(QColor &);
+public slots:
+    void changeCurrentColor(QColor &color);
 public slots:
 };
 
