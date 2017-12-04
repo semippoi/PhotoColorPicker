@@ -13,10 +13,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        MainWindow.cpp \
-    ColorPickerView.cpp
+           MainWindow.cpp \
+           ColorPickerView.cpp \
+           DrawLayer.cpp
 
 HEADERS  += MainWindow.h \
-    ColorPickerView.h
+            ColorPickerView.h \
+            DrawLayer.h
 
 FORMS    += MainWindow.ui

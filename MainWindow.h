@@ -17,11 +17,16 @@ private:
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    QColor getCurrentColor();
 
 private slots:
     void on_pushButton_clicked();
     void displayGetColor(QColor &color);
 
+    void on_toolButton_clicked();
+
+signals:
+    void currentColorChanged(QColor &color);
 private:
     Ui::MainWindow *ui;
 };
