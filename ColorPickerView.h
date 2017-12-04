@@ -15,7 +15,12 @@ public:
 
     void initializeLayer(QPixmap const &pixmap);
 
+    void setBrushTool(bool checked);
+    void setFillTool(bool checked);
+
     virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void paintEvent(QPaintEvent *);
 private:
     QColor pickUpColor(QPixmap pixmap, QPoint pos);

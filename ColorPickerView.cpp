@@ -3,6 +3,10 @@
 #include <QGraphicsItem>
 
 struct ColorPickerView::Private {
+    struct Tool{
+        bool brush_tool;
+        bool fill_tool;
+    } t;
     QPixmap base_pixmap;
     QPixmap layer;
     bool transparent;
@@ -10,6 +14,8 @@ struct ColorPickerView::Private {
     QColor current_color;
     std::vector<QPoint> fill_point;    // 塗りつぶすpixel保存用のスタック
     Private(){
+        t.brush_tool = false;
+        t.fill_tool = false;
         transparent = true;
         fill_point.clear();
         current_color = Qt::black;
@@ -116,6 +122,20 @@ void ColorPickerView::mousePressEvent(QMouseEvent *event)
     }
 }
 
+void ColorPickerView::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->button() & Qt::LeftButton && pv->t.brush_tool) {
+
+    }
+}
+
+void ColorPickerView::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() & Qt::LeftButton && pv->t.brush_tool) {
+
+    }
+}
+
 void ColorPickerView::paintEvent(QPaintEvent *)
 {
     QPainter painter(viewport());
@@ -160,5 +180,15 @@ void ColorPickerView::initializeLayer(const QPixmap &pixmap)
     pv->base_pixmap = pixmap;
     pv->layer = QPixmap(pixmap.width(), pixmap.height());
     pv->layer.fill(QColor(0, 0, 0, 0));
+}
+
+void ColorPickerView::setBrushTool(bool checked)
+{
+    pv->t.brush_tool = checked;
+}
+
+void ColorPickerView::setFillTool(bool checked)
+{
+    pv->t.brush_tool = checked;
 }
 

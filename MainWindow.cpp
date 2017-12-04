@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowIcon(QIcon(":/images/app_icon.png"));
     ui->graphicsView->setScene(&scene);
 
     // コネクト
@@ -59,4 +60,26 @@ void MainWindow::on_toolButton_clicked()
         current_color = dlg.selectedColor();
         emit currentColorChanged(current_color);
     }
+}
+
+void MainWindow::on_toolButton_drawBrush_toggled(bool checked)
+{
+    if (checked) {
+        ui->toolButton_fill->setChecked(false);
+        ui->graphicsView->setFillTool(false);
+    } else {
+
+    }
+    ui->graphicsView->setBrushTool(checked);
+}
+
+void MainWindow::on_toolButton_fill_toggled(bool checked)
+{
+    if (checked) {
+        ui->toolButton_drawBrush->setChecked(false);
+        ui->graphicsView->setBrushTool(false);
+    } else {
+
+    }
+    ui->graphicsView->setFillTool(checked);
 }

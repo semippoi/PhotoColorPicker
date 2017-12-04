@@ -24,6 +24,8 @@ private slots:
     void displayGetColor(QColor &color);
 
     void on_toolButton_clicked();
+    void on_toolButton_drawBrush_toggled(bool checked);
+    void on_toolButton_fill_toggled(bool checked);
 
 signals:
     void currentColorChanged(QColor &color);
