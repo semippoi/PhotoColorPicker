@@ -15,18 +15,11 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="ColorPickerView" name="graphicsView"/>
     </item>
-    <item row="1" column="2">
+    <item row="2" column="2">
      <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>Browse Photo!</string>
-        </property>
-       </widget>
-      </item>
       <item alignment="Qt::AlignHCenter">
        <widget class="QToolButton" name="toolButton_drawBrush">
         <property name="minimumSize">
@@ -44,6 +37,16 @@
         <property name="text">
          <string/>
         </property>
+        <property name="icon">
+         <iconset resource="images/resource.qrc">
+          <normaloff>:/images/brush_icon.png</normaloff>:/images/brush_icon.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>35</width>
+          <height>35</height>
+         </size>
+        </property>
         <property name="checkable">
          <bool>true</bool>
         </property>
@@ -57,8 +60,24 @@
           <height>40</height>
          </size>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
         <property name="text">
          <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="images/resource.qrc">
+          <normaloff>:/images/bucket_icon.png</normaloff>:/images/bucket_icon.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -103,10 +122,21 @@
       </item>
      </layout>
     </item>
-    <item row="0" column="0" colspan="3">
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="readOnly">
-       <bool>true</bool>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLineEdit" name="lineEdit">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>Reference...</string>
       </property>
      </widget>
     </item>
@@ -122,6 +152,8 @@
    <header>ColorPickerView.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="images/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
