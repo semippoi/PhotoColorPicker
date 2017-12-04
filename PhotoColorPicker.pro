@@ -20,3 +20,11 @@ HEADERS  += MainWindow.h \
             ColorPickerView.h \
 
 FORMS    += MainWindow.ui
+
+DISTFILES += \
+    images/brush_icon.png \
+    images/bucket_icon.png \
+    images/colorize_icon.png
+
+RESOURCES += \
+    images/resource.qrc

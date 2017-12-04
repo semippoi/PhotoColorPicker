@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>bucket_icon.png</file>
+        <file>brush_icon.png</file>
+        <file>colorize_icon.png</file>
+        <file>app_icon.png</file>
+    </qresource>
+</RCC>
