@@ -16,7 +16,8 @@ struct ColorPickerView::Private {
     double right;
     QColor current_color;
     std::vector<QPoint> fill_point;    // 塗りつぶすpixel保存用のスタック
-    std::vector<QPoint> target_stack;
+    std::list<QPoint> target_stack;
+    std::list<QPoint> stack;
 
     QPoint lastPoint;
     Private(){
@@ -70,6 +71,7 @@ void ColorPickerView::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->button() & Qt::LeftButton && pv->t.brush_tool) {
         drawLineTo(event->pos());
+        viewport()->update();
     }
 }
 
@@ -77,6 +79,7 @@ void ColorPickerView::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() & Qt::LeftButton && pv->t.brush_tool) {
         drawLineTo(event->pos());
+        viewport()->update();
     }
 }
 
@@ -115,9 +118,9 @@ void ColorPickerView::fill_color(QPoint point)
 {
     pv->right = pv->base_pixmap.width();
 
-    pv->target_stack.push_back(point);
     pv->fill_point.push_back(point);
-    std::vector<QPoint>::iterator it1 = pv->target_stack.begin();
+    auto it1 = pv->target_stack.begin();
+    it1 = pv->target_stack.insert(it1, point);
 
     int xleft = 0, xright = 0;
 
@@ -131,6 +134,11 @@ void ColorPickerView::fill_color(QPoint point)
 
     while (it1 != pv->target_stack.end()) {
         QPoint p = *it1;
+
+        if (pickUpColor(pv->layer, p) == pv->current_color) {
+            ++it1;
+            continue;
+        }
 
         // 左の境界を探す
         for (int i = 1; i < p.x(); i++) {
@@ -163,18 +171,29 @@ void ColorPickerView::fill_color(QPoint point)
             it2++;
         }
         pv->layer.convertFromImage(pv->drawing_layer);
+        pv->fill_point.clear();
 
 
         // (xleft, Y-1)から(xright, Y-1)を走査して境界の右端のピクセルをスタックに積む
         if (p.y() - 1 >= 0) {
-            scanLine(compare, xleft, xright, p.y(), target_color);
+            scanLine(compare, xleft, xright, p.y() - 1, target_color);
         }
 
         // (xleft, Y+1)から(xright, Y+1)を走査して境界の一個前のピクセルをスタックに積む
         if (p.y() + 1 <= pv->base_pixmap.height()) {
-            scanLine(compare, xleft, xright, p.y(), target_color);
+            scanLine(compare, xleft, xright, p.y() + 1, target_color);
         }
-        it1++;
+
+//        pv->stack.clear();
+//        auto it_ = pv->stack.begin();
+//        auto ite = pv->target_stack.begin();
+//        while (it_ != pv->stack.end()) {
+//            pv->target_stack.emplace_back(*it_);
+//            ++it_;
+//            ++ite;
+//        }
+
+        ++it1;
     }
 
 //    std::vector<QPoint>::iterator it2 = pv->fill_point.begin();
@@ -216,7 +235,8 @@ void ColorPickerView::scanLine(QPixmap compare, int xleft, int xright, int y, QC
         for (; xleft <= xright; xleft++) {
             if (pickUpColor(compare, QPoint(xleft, y)) != col) break;
         }
-        pv->target_stack.push_back(QPoint(xleft - 1, y));
+//        pv->stack.push_back(QPoint(xleft - 1, y));
+        pv->target_stack.emplace_back(QPoint(xleft - 1, y));
     }
 }
 
