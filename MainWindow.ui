@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>408</width>
-    <height>290</height>
+    <width>521</width>
+    <height>382</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -84,6 +84,38 @@
         </property>
        </widget>
       </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QToolButton" name="toolButton_colorize">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="images/resource.qrc">
+          <normaloff>:/images/colorize_icon.png</normaloff>:/images/colorize_icon.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
@@ -143,6 +175,40 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>521</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>ファイル</string>
+    </property>
+    <addaction name="actionLoad_Image_File"/>
+    <addaction name="actionSave_Image_File"/>
+   </widget>
+   <addaction name="menu"/>
+  </widget>
+  <action name="actionLoad_Image_File">
+   <property name="text">
+    <string>Load Image File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionSave_Image_File">
+   <property name="text">
+    <string>Save Image File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
