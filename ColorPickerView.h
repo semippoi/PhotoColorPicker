@@ -17,6 +17,7 @@ public:
 
     void setBrushTool(bool checked);
     void setFillTool(bool checked);
+    void setColorizeTool(bool checked);
 
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
@@ -25,6 +26,11 @@ public:
 private:
     QColor pickUpColor(QPixmap pixmap, QPoint pos);
     void invalidatePixmap();
+
+    void fill_color(QPoint point);
+    void prepare_draw_brush(QPainter *painter, QPoint point);
+    void drawLineTo(QPoint point);
+    void scanLine(QPixmap compare, int xleft, int xright, int y, QColor col);
 
 protected:
     struct Private;
