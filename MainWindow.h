@@ -27,6 +27,10 @@ private slots:
     void on_toolButton_drawBrush_toggled(bool checked);
     void on_toolButton_fill_toggled(bool checked);
 
+    void on_actionLoad_Image_File_triggered();
+
+    void on_toolButton_colorize_toggled(bool checked);
+
 signals:
     void currentColorChanged(QColor &color);
 private:

@@ -67,8 +67,8 @@ void MainWindow::on_toolButton_drawBrush_toggled(bool checked)
     if (checked) {
         ui->toolButton_fill->setChecked(false);
         ui->graphicsView->setFillTool(false);
-    } else {
-
+        ui->toolButton_colorize->setChecked(false);
+        ui->graphicsView->setColorizeTool(false);
     }
     ui->graphicsView->setBrushTool(checked);
 }
@@ -78,8 +78,24 @@ void MainWindow::on_toolButton_fill_toggled(bool checked)
     if (checked) {
         ui->toolButton_drawBrush->setChecked(false);
         ui->graphicsView->setBrushTool(false);
-    } else {
-
+        ui->toolButton_colorize->setChecked(false);
+        ui->graphicsView->setColorizeTool(false);
     }
     ui->graphicsView->setFillTool(checked);
+}
+
+void MainWindow::on_actionLoad_Image_File_triggered()
+{
+    on_pushButton_clicked();
+}
+
+void MainWindow::on_toolButton_colorize_toggled(bool checked)
+{
+    if (checked) {
+        ui->toolButton_drawBrush->setChecked(false);
+        ui->graphicsView->setBrushTool(false);
+        ui->toolButton_fill->setChecked(false);
+        ui->graphicsView->setFillTool(false);
+    }
+    ui->graphicsView->setColorizeTool(checked);
 }
