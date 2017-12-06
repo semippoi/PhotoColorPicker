@@ -149,10 +149,10 @@ void ColorPickerView::fill_color(QPoint point)
         QPoint p = pv->target_stack.front();
 
         // 左の境界を探す
-        for (int i = 1; i <= p.x(); i++) {
+        for (int i = 0; i <= p.x(); i++) {
             QPoint q = QPoint(p.x() - i, p.y());
             if (pickUpColor(compare, p) != pickUpColor(compare, q)) {
-                xleft = p.x() - i + 1;
+                xleft = p.x() - i;
                 break;
             } else {
                 pv->fill_point.push_back(q);
@@ -192,7 +192,7 @@ void ColorPickerView::fill_color(QPoint point)
         }
 
         // (xleft, Y+1)から(xright, Y+1)を走査して境界の一個前のピクセルをスタックに積む
-        if (p.y() + 1 <= pv->base_pixmap.height()) {
+        if (p.y() + 1 < pv->base_pixmap.height()) {
             scanLine(compare, xleft, xright, p.y() + 1, target_color);
         }
 
@@ -256,7 +256,7 @@ void ColorPickerView::initializeLayer(const QPixmap &pixmap)
     pv->base_pixmap = pixmap;
     pv->layer = QPixmap(pixmap.width(), pixmap.height());
     pv->layer.fill(QColor(0, 0, 0, 0));
-    pv->drawing_layer = pv->layer.toImage();
+    pv->drawing_layer.fill(QColor(0, 0, 0, 0));
 }
 
 void ColorPickerView::setBrushTool(bool checked)
