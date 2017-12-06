@@ -252,8 +252,10 @@ void ColorPickerView::changeCurrentColor(QColor &color)
 
 void ColorPickerView::initializeLayer(const QPixmap &pixmap)
 {
-    invalidatePixmap();
-    pv->base_pixmap = pixmap;
+    if (!pixmap.isNull()) {
+        invalidatePixmap();
+        pv->base_pixmap = pixmap;
+    }
     pv->layer = QPixmap(pixmap.width(), pixmap.height());
     pv->layer.fill(QColor(0, 0, 0, 0));
     pv->drawing_layer.fill(QColor(0, 0, 0, 0));

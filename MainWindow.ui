@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
-    <height>382</height>
+    <width>627</width>
+    <height>462</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -116,6 +116,35 @@
         </property>
        </widget>
       </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QToolButton" name="toolButton_layer_clear">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="images/resource.qrc">
+          <normaloff>:/images/clear_icon.png</normaloff>:/images/clear_icon.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+       </widget>
+      </item>
       <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
@@ -180,7 +209,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>521</width>
+     <width>627</width>
      <height>24</height>
     </rect>
    </property>

@@ -31,6 +31,8 @@ private slots:
 
     void on_toolButton_colorize_toggled(bool checked);
 
+    void on_toolButton_layer_clear_clicked();
+
 signals:
     void currentColorChanged(QColor &color);
 private:

@@ -3,6 +3,7 @@
 
 #include <QFileDialog>
 #include <QColorDialog>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -98,4 +99,11 @@ void MainWindow::on_toolButton_colorize_toggled(bool checked)
         ui->graphicsView->setFillTool(false);
     }
     ui->graphicsView->setColorizeTool(checked);
+}
+
+void MainWindow::on_toolButton_layer_clear_clicked()
+{
+    if (QMessageBox::warning(this, "", "Does Drawing Layer erase?", QMessageBox::Yes | QMessageBox::No)) {
+        ui->graphicsView->initializeLayer(QPixmap());
+    }
 }
