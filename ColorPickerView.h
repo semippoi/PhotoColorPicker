@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QGraphicsView>
 #include <QMouseEvent>
+#include <list>
 
 #include "MainWindow.h"
 

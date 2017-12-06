@@ -1,6 +1,9 @@
 #include "ColorPickerView.h"
 
 #include <QGraphicsItem>
+#include <iostream>
+#include <algorithm>
+#include <vector>
 
 struct ColorPickerView::Private {
     struct Tool{
@@ -35,6 +38,10 @@ ColorPickerView::ColorPickerView(QWidget *parent) : QGraphicsView(parent)
 {
     pv = new Private();
     invalidatePixmap();
+    pv->layer = QPixmap(500, 500);
+    pv->drawing_layer = pv->layer.toImage();
+
+    update();
 }
 
 
@@ -63,6 +70,8 @@ void ColorPickerView::mousePressEvent(QMouseEvent *event)
             pv->current_color = rgb;
 
             emit getColor(rgb);
+        } else {
+            qDebug("ClickPos : ( %d, %d)", event->pos().x(), event->pos().y());
         }
     }
 }
@@ -117,12 +126,16 @@ void ColorPickerView::invalidatePixmap()
 void ColorPickerView::fill_color(QPoint point)
 {
     pv->right = pv->base_pixmap.width();
+    if (pv->base_pixmap.isNull()){
+        pv->right = 500;
+    }
 
     pv->fill_point.push_back(point);
-    auto it1 = pv->target_stack.begin();
-    it1 = pv->target_stack.insert(it1, point);
+    //auto it1 = pv->target_stack.begin();
+    //it1 = pv->target_stack.insert(it1, point);
+    pv->target_stack.push_back(point);
 
-    int xleft = 0, xright = 0;
+    int xleft = 0, xright = pv->right;
 
     QPixmap compare;
     if (pv->transparent) {
@@ -132,16 +145,11 @@ void ColorPickerView::fill_color(QPoint point)
     }
     QColor target_color = pickUpColor(compare, point);
 
-    while (it1 != pv->target_stack.end()) {
-        QPoint p = *it1;
-
-        if (pickUpColor(pv->layer, p) == pv->current_color) {
-            ++it1;
-            continue;
-        }
+    while (!pv->target_stack.empty()) {
+        QPoint p = pv->target_stack.front();
 
         // ¶‚Ì‹«ŠE‚ğ’T‚·
-        for (int i = 1; i < p.x(); i++) {
+        for (int i = 1; i <= p.x(); i++) {
             QPoint q = QPoint(p.x() - i, p.y());
             if (pickUpColor(compare, p) != pickUpColor(compare, q)) {
                 xleft = p.x() - i + 1;
@@ -152,19 +160,23 @@ void ColorPickerView::fill_color(QPoint point)
         }
 
         // ‰E‚Ì‹«ŠE‚ğ’T‚·
-        for (int j = 1; j < pv->right ; j++) {
-            QPoint q = QPoint(p.x() + j, p.y());
+        for (int j = p.x(); j < pv->right ; j++) {
+            QPoint q = QPoint(j, p.y());
             if (pickUpColor(compare, p) != pickUpColor(compare, q)) {
-                xright = p.x() + j - 1;
+                xright = j;
                 break;
             } else {
                 pv->fill_point.push_back(q);
+            }
+            if (j == pv->right) {
+                xright = pv->right;
             }
         }
 
         // xleft‚©‚çxright‚Ü‚Å‚Ìü•ª‚ğ•`‰æ‚·‚é
         std::vector<QPoint>::iterator it2 = pv->fill_point.begin();
         pv->drawing_layer = pv->layer.toImage();
+
         while (it2 != pv->fill_point.end()) {
             QPoint fp = *it2;
             pv->drawing_layer.setPixelColor(fp, pv->current_color);
@@ -184,7 +196,6 @@ void ColorPickerView::fill_color(QPoint point)
             scanLine(compare, xleft, xright, p.y() + 1, target_color);
         }
 
-//        pv->stack.clear();
 //        auto it_ = pv->stack.begin();
 //        auto ite = pv->target_stack.begin();
 //        while (it_ != pv->stack.end()) {
@@ -192,20 +203,11 @@ void ColorPickerView::fill_color(QPoint point)
 //            ++it_;
 //            ++ite;
 //        }
+//        pv->stack.clear();
 
-        ++it1;
+        pv->target_stack.pop_front();
+        viewport()->update();
     }
-
-//    std::vector<QPoint>::iterator it2 = pv->fill_point.begin();
-//    pv->drawing_layer = pv->layer.toImage();
-//    while (it2 != pv->fill_point.end()) {
-//        QPoint fp = *it2;
-//        pv->drawing_layer.setPixelColor(fp, pv->current_color);
-//        it2++;
-//    }
-//    pv->layer.convertFromImage(pv->drawing_layer);
-
-    viewport()->update();
 }
 
 void ColorPickerView::prepare_draw_brush(QPainter *painter, QPoint point)
@@ -224,19 +226,22 @@ void ColorPickerView::drawLineTo(QPoint point)
 
 void ColorPickerView::scanLine(QPixmap compare, int xleft, int xright, int y, QColor col)
 {
-    while (xleft <= xright) {
+    while (xleft < xright) {
         // ”ñ—ÌˆæF‚ğ”ò‚Î‚·
-        for (; xleft <= xright; xleft++) {
+        for (; xleft < xright; xleft++) {
             if (pickUpColor(compare, QPoint(xleft, y)) == col) break;
         }
         if (pickUpColor(compare, QPoint(xleft, y)) != col) break;
 
         // —ÌˆæF‚ğ”ò‚Î‚·
-        for (; xleft <= xright; xleft++) {
+        for (; xleft < xright; xleft++) {
             if (pickUpColor(compare, QPoint(xleft, y)) != col) break;
         }
 //        pv->stack.push_back(QPoint(xleft - 1, y));
-        pv->target_stack.emplace_back(QPoint(xleft - 1, y));
+        std::list<QPoint>::iterator it = std::find(pv->target_stack.begin(), pv->target_stack.end(), QPoint(xleft - 1, y));
+        if (it == pv->target_stack.end() && pickUpColor(pv->layer, QPoint(xleft - 1, y)) != pv->current_color) {
+            pv->target_stack.emplace_back(QPoint(xleft - 1, y));
+        }
     }
 }
 
