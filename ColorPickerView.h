@@ -8,6 +8,28 @@
 
 #include "MainWindow.h"
 
+struct RegionFiller{
+    int xleft; // 領域左端のX座標
+    int xright;  // 領域右端のX座標
+    int y; // 領域のY座標
+    int oy; // 親ラインのY座標
+    RegionFiller(int xleft, int xright, int y, int oy)
+        : xleft(xleft)
+        , xright(xright)
+        , y(y)
+        , oy(oy)
+    {
+    }
+    bool operator == (const RegionFiller &a) const
+    {
+        if (xleft == a.xleft && xright == a.xright && y == a.y && oy == a.oy) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
 class ColorPickerView : public QGraphicsView
 {
     Q_OBJECT
@@ -31,7 +53,7 @@ private:
     void fill_color(QPoint point);
     void prepare_draw_brush(QPainter *painter, QPoint point);
     void drawLineTo(QPoint point);
-    void scanLine(QPixmap compare, int xleft, int xright, int y, QColor col);
+    void scanLine(QPixmap compare, int xleft, int xright, int y, int yparent, QColor col);
 
 protected:
     struct Private;

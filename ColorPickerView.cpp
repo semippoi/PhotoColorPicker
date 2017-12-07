@@ -18,9 +18,9 @@ struct ColorPickerView::Private {
     bool transparent;
     double right;
     QColor current_color;
+
     std::vector<QPoint> fill_point;    // 塗りつぶすpixel保存用のスタック
-    std::list<QPoint> target_stack;
-    std::list<QPoint> stack;
+    std::vector<RegionFiller> target_stack;
 
     QPoint lastPoint;
     Private(){
@@ -48,13 +48,13 @@ ColorPickerView::ColorPickerView(QWidget *parent) : QGraphicsView(parent)
 
 void ColorPickerView::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() & Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton) {
         if (pv->t.brush_tool) {
             // フリーハンド描画
             pv->lastPoint = event->pos();
             pv->drawing_layer = pv->layer.toImage();
-            QPainter painter(&pv->drawing_layer);
-            prepare_draw_brush(&painter, event->pos());
+//            QPainter painter(&pv->drawing_layer);
+//            prepare_draw_brush(&painter, event->pos());
         } else if (pv->t.fill_tool) {
             // 塗りつぶし
             fill_color(event->pos());
@@ -80,15 +80,13 @@ void ColorPickerView::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->button() & Qt::LeftButton && pv->t.brush_tool) {
         drawLineTo(event->pos());
-        viewport()->update();
     }
 }
 
 void ColorPickerView::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() & Qt::LeftButton && pv->t.brush_tool) {
+    if (event->button() == Qt::LeftButton && pv->t.brush_tool) {
         drawLineTo(event->pos());
-        viewport()->update();
     }
 }
 
@@ -104,7 +102,7 @@ void ColorPickerView::paintEvent(QPaintEvent *)
 
     //painter.drawPixmap(0, 0, pv->layer);
 
-    pv->fill_point.clear();
+    //pv->fill_point.clear();
 }
 
 // 色の抽出
@@ -125,17 +123,18 @@ void ColorPickerView::invalidatePixmap()
 // 領域塗りつぶし
 void ColorPickerView::fill_color(QPoint point)
 {
+    // 右端の決定
     pv->right = pv->base_pixmap.width();
     if (pv->base_pixmap.isNull()){
         pv->right = 500;
     }
 
-    pv->fill_point.push_back(point);
-    //auto it1 = pv->target_stack.begin();
-    //it1 = pv->target_stack.insert(it1, point);
-    pv->target_stack.push_back(point);
+    int xleft = point.x(), xright = point.x();
+    int yparent;
 
-    int xleft = 0, xright = pv->right;
+    pv->fill_point.push_back(point);
+    pv->target_stack.push_back(RegionFiller(point.x(), xright, point.y(), point.y()));
+
 
     QPixmap compare;
     if (pv->transparent) {
@@ -146,85 +145,102 @@ void ColorPickerView::fill_color(QPoint point)
     QColor target_color = pickUpColor(compare, point);
 
     while (!pv->target_stack.empty()) {
-        QPoint p = pv->target_stack.front();
+        RegionFiller region_filler = pv->target_stack.back();
+        pv->target_stack.pop_back();
+
+        xleft = region_filler.xleft;
+        xright = region_filler.xright;
+        int y = region_filler.y;
+        yparent = region_filler.oy;
+
+        int xleft_save = xleft - 1;
+        if (xleft_save < 0) xleft_save = 0;
+        int xright_save = xright + 1;
+        if (xright_save > pv->right) xright_save = pv->right;
 
         // 左の境界を探す
-        for (int i = 0; i <= p.x(); i++) {
-            QPoint q = QPoint(p.x() - i, p.y());
-            if (pickUpColor(compare, p) != pickUpColor(compare, q)) {
-                xleft = p.x() - i;
+        while (xleft >= 0) {
+            QPoint q = QPoint(xleft, y);
+            if (pickUpColor(compare, q) != target_color) {
                 break;
             } else {
                 pv->fill_point.push_back(q);
+                if (xleft == 0) break;
             }
+            xleft--;
         }
 
         // 右の境界を探す
-        for (int j = p.x(); j < pv->right ; j++) {
-            QPoint q = QPoint(j, p.y());
-            if (pickUpColor(compare, p) != pickUpColor(compare, q)) {
-                xright = j;
+        while (xright < pv->right) {
+            QPoint q = QPoint(xright, y);
+            if (pickUpColor(compare, q) != target_color) {
                 break;
             } else {
                 pv->fill_point.push_back(q);
+                if (xright == pv->right - 1) break;
             }
-            if (j == pv->right) {
-                xright = pv->right;
-            }
+            xright++;
         }
 
         // xleftからxrightまでの線分を描画する
-        std::vector<QPoint>::iterator it2 = pv->fill_point.begin();
+//        std::vector<QPoint>::iterator it = pv->fill_point.begin();
         pv->drawing_layer = pv->layer.toImage();
 
-        while (it2 != pv->fill_point.end()) {
-            QPoint fp = *it2;
-            pv->drawing_layer.setPixelColor(fp, pv->current_color);
-            it2++;
+        for (int i = xleft; i < xright; i++) {
+            pv->drawing_layer.setPixelColor(i, y, pv->current_color);
         }
+//        while (it != pv->fill_point.end()) {
+//            QPoint fp = *it;
+//            pv->drawing_layer.setPixelColor(fp, pv->current_color);
+//            it++;
+//        }
         pv->layer.convertFromImage(pv->drawing_layer);
-        pv->fill_point.clear();
+//        pv->fill_point.clear();
 
 
         // (xleft, Y-1)から(xright, Y-1)を走査して境界の右端のピクセルをスタックに積む
-        if (p.y() - 1 >= 0) {
-            scanLine(compare, xleft, xright, p.y() - 1, target_color);
+        if (y - 1 >= 0) {
+            if (y - 1 == yparent) {
+                scanLine(compare, xleft, xleft_save, y - 1, y, target_color);
+                scanLine(compare, xright_save, xright, y - 1, y, target_color);
+            } else {
+                scanLine(compare, xleft, xright, y - 1, y, target_color);
+            }
         }
 
         // (xleft, Y+1)から(xright, Y+1)を走査して境界の一個前のピクセルをスタックに積む
-        if (p.y() + 1 < pv->base_pixmap.height()) {
-            scanLine(compare, xleft, xright, p.y() + 1, target_color);
+        if (y + 1 < pv->base_pixmap.height()) {
+            if (y + 1 == yparent) {
+                scanLine(compare, xleft, xleft_save, y + 1, y, target_color);
+                scanLine(compare, xright_save, xright, y + 1, y, target_color);
+            } else {
+                scanLine(compare, xleft, xright, y + 1, y, target_color);
+            }
         }
-
-//        auto it_ = pv->stack.begin();
-//        auto ite = pv->target_stack.begin();
-//        while (it_ != pv->stack.end()) {
-//            pv->target_stack.emplace_back(*it_);
-//            ++it_;
-//            ++ite;
-//        }
-//        pv->stack.clear();
-
-        pv->target_stack.pop_front();
         viewport()->update();
     }
 }
 
-void ColorPickerView::prepare_draw_brush(QPainter *painter, QPoint point)
-{
-    painter->setPen(QPen(pv->current_color, 5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+//void ColorPickerView::prepare_draw_brush(QPainter *painter, QPoint point)
+//{
+//    painter->setPen(QPen(pv->current_color, 5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
-}
+//}
 
 void ColorPickerView::drawLineTo(QPoint point)
 {
     QPainter painter(&pv->drawing_layer);
+    painter.setPen(QPen(pv->current_color, 5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     painter.drawLine(pv->lastPoint, point);
 
+
+    pv->layer.convertFromImage(pv->drawing_layer);
+
+    viewport()->update();
     pv->lastPoint = point;
 }
 
-void ColorPickerView::scanLine(QPixmap compare, int xleft, int xright, int y, QColor col)
+void ColorPickerView::scanLine(QPixmap compare, int xleft, int xright, int y, int yparent, QColor col)
 {
     while (xleft < xright) {
         // 非領域色を飛ばす
@@ -232,15 +248,16 @@ void ColorPickerView::scanLine(QPixmap compare, int xleft, int xright, int y, QC
             if (pickUpColor(compare, QPoint(xleft, y)) == col) break;
         }
         if (pickUpColor(compare, QPoint(xleft, y)) != col) break;
+        int left = xleft;
 
         // 領域色を飛ばす
         for (; xleft < xright; xleft++) {
             if (pickUpColor(compare, QPoint(xleft, y)) != col) break;
         }
-//        pv->stack.push_back(QPoint(xleft - 1, y));
-        std::list<QPoint>::iterator it = std::find(pv->target_stack.begin(), pv->target_stack.end(), QPoint(xleft - 1, y));
-        if (it == pv->target_stack.end() && pickUpColor(pv->layer, QPoint(xleft - 1, y)) != pv->current_color) {
-            pv->target_stack.emplace_back(QPoint(xleft - 1, y));
+
+        //auto it = std::find(pv->target_stack.begin(), pv->target_stack.end(), RegionFiller(left, xleft - 1, y, yparent));
+        if (pickUpColor(pv->layer, QPoint(xleft - 1, y)) != pv->current_color) {
+            pv->target_stack.emplace_back(RegionFiller(left, xleft - 1, y, yparent));
         }
     }
 }
