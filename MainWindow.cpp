@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setWindowIcon(QIcon(":/images/app_icon.png"));
     ui->graphicsView->setScene(&scene);
+    ui->scrollArea->setGraphicView(ui->graphicsView);
 
     // コネクト
     connect(ui->graphicsView, SIGNAL(getColor(QColor &)), this, SLOT(displayGetColor(QColor &)));

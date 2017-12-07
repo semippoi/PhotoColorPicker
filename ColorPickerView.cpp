@@ -95,6 +95,8 @@ void ColorPickerView::paintEvent(QPaintEvent *)
     QPainter painter(viewport());
 
     QImage img = pv->layer.toImage();
+//    QImage scaled_img = img.scaled(viewport()->width(), viewport()->height()
+//                                   , Qt::KeepAspectRatio, Qt::FastTransformation);
 
     painter.drawPixmap(0, 0, pv->base_pixmap);
     painter.drawImage(0, 0, img);

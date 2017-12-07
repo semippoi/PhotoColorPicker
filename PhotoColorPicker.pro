@@ -15,9 +15,11 @@ TEMPLATE = app
 SOURCES += main.cpp\
            MainWindow.cpp \
            ColorPickerView.cpp \
+           ScrollArea.cpp
 
 HEADERS  += MainWindow.h \
             ColorPickerView.h \
+            ScrollArea.h
 
 FORMS    += MainWindow.ui
 
