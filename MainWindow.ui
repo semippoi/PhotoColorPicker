@@ -14,12 +14,12 @@
    <string>ColorPickerView</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="2" column="0">
-     <widget class="ColorPickerView" name="graphicsView"/>
-    </item>
-    <item row="2" column="2">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>4</number>
+      </property>
       <item alignment="Qt::AlignHCenter">
        <widget class="QToolButton" name="toolButton_drawBrush">
         <property name="minimumSize">
@@ -159,7 +159,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="label_current_color">
         <property name="text">
          <string>Current Color :</string>
         </property>
@@ -183,22 +183,91 @@
       </item>
      </layout>
     </item>
-    <item row="0" column="0">
+    <item row="0" column="0" colspan="2">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QLabel" name="label_path">
+        <property name="text">
+         <string>Path :</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLineEdit" name="lineEdit">
+        <property name="text">
+         <string/>
+        </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Reference...</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>Reference...</string>
+    <item row="1" column="1">
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable">
+       <bool>true</bool>
       </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents_2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>524</width>
+         <height>364</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="ColorPickerView" name="graphicsView">
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="backgroundBrush">
+           <brush brushstyle="NoBrush">
+            <color alpha="100">
+             <red>0</red>
+             <green>0</green>
+             <blue>0</blue>
+            </color>
+           </brush>
+          </property>
+          <property name="foregroundBrush">
+           <brush brushstyle="NoBrush">
+            <color alpha="100">
+             <red>0</red>
+             <green>0</green>
+             <blue>0</blue>
+            </color>
+           </brush>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
