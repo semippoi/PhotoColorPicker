@@ -5,6 +5,9 @@
 #include <QColorDialog>
 #include <QMessageBox>
 
+#include "AddNewLayerDialog.h"
+#include "DrawingInformation.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -21,6 +24,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     current_color = Qt::black;
     ui->toolButton->setStyleSheet("background-color:#000000");
+
+    DrawingInformation *info = new DrawingInformation();
+    initDrawingInformation(info);
 }
 
 MainWindow::~MainWindow()
@@ -33,7 +39,7 @@ QColor MainWindow::getCurrentColor()
     return current_color;
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::loadImageFile()
 {
     // 画像を表示する
     QString path = QFileDialog::getOpenFileName(this, "Open", QString(), tr("Image Files (*.bmp *.png *.jpg)"));
@@ -42,10 +48,15 @@ void MainWindow::on_pushButton_clicked()
     //scene.addPixmap(pixmap);
     ui->graphicsView->initializeLayer(pixmap);
 
-    ui->lineEdit->setText(path);
+    statusBar()->showMessage(path);
 
     // 画像に合わせて伸縮する
     ui->graphicsView->setFixedSize(pixmap.width(), pixmap.height());
+}
+
+void MainWindow::initDrawingInformation(DrawingInformation *di)
+{
+    info = di;
 }
 
 void MainWindow::displayGetColor(QColor &color)
@@ -88,7 +99,7 @@ void MainWindow::on_toolButton_fill_toggled(bool checked)
 
 void MainWindow::on_actionLoad_Image_File_triggered()
 {
-    on_pushButton_clicked();
+    loadImageFile();
 }
 
 void MainWindow::on_toolButton_colorize_toggled(bool checked)
@@ -106,5 +117,17 @@ void MainWindow::on_toolButton_layer_clear_clicked()
 {
     if (QMessageBox::warning(this, "", "Does Drawing Layer erase?", QMessageBox::Yes | QMessageBox::No)) {
         ui->graphicsView->initializeLayer(QPixmap());
+    }
+}
+
+void MainWindow::on_toolButton_add_layer_clicked()
+{
+    AddNewLayerDialog *dlg = new AddNewLayerDialog();
+    if (dlg->exec() == QDialog::Accepted) {
+        // TODO: ここでLayerBrowserItemを作成する
+        LayerBrowserItem item;
+        item.setLayerName(dlg->layerName());
+        // スタック的なサムシングにぶち込む
+        ui->listWidget->setItem(ui->listWidget->count(), item);
     }
 }
