@@ -78,8 +78,12 @@ void ColorPickerView::mousePressEvent(QMouseEvent *event)
 
 void ColorPickerView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->button() & Qt::LeftButton && pv->t.brush_tool) {
-        drawLineTo(event->pos());
+    if (event->buttons() & Qt::LeftButton) {
+        if (pv->t.brush_tool) {
+            drawLineTo(event->pos());
+        } else if (pv->t.fill_tool) {
+            fill_color(event->pos());
+        }
     }
 }
 
