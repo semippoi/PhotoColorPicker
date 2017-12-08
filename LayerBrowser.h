@@ -3,11 +3,13 @@
 
 #include <QWidget>
 #include <QListWidget>
+#include <QStyledItemDelegate>
 #include "LayerBrowserItem.h"
 
 class LayerBrowser : public QListWidget
 {
     Q_OBJECT
+    friend class LayerBrowserItemDelegate;
 private:
     QList<LayerBrowserItem> my_items_;
     QList<LayerBrowserItem> items;

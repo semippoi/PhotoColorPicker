@@ -6,5 +6,7 @@
         <file>app_icon.png</file>
         <file>clear_icon.png</file>
         <file>add_icon.png</file>
+        <file>eye_icon.png</file>
+        <file>grayeye_icon.png</file>
     </qresource>
 </RCC>
