@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     LayerBrowser.cpp \
     LayerBrowserItem.cpp \
     AddNewLayerDialog.cpp \
-    DrawingInformation.cpp
+    DrawingInformation.cpp \
+    misc/misc.cpp
 
 HEADERS  += MainWindow.h \
             ColorPickerView.h \
@@ -27,15 +28,11 @@ HEADERS  += MainWindow.h \
     LayerBrowser.h \
     LayerBrowserItem.h \
     AddNewLayerDialog.h \
-    DrawingInformation.h
+    DrawingInformation.h \
+    misc/misc.h
 
 FORMS    += MainWindow.ui \
     AddNewLayerDialog.ui
 
-DISTFILES += \
-    images/brush_icon.png \
-    images/bucket_icon.png \
-    images/colorize_icon.png
-
 RESOURCES += \
-    images/resource.qrc
+    resource/resource.qrc
